@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "119794560669",
+    "firebase_url": "https://mobilelab-d900f.firebaseio.com",
+    "project_id": "mobilelab-d900f",
+    "storage_bucket": "mobilelab-d900f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119794560669:android:c891b6dc58f07d4125ee74",
+        "android_client_info": {
+          "package_name": "com.example.lab1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "119794560669-jspiq81hv6i62ioca3n8dcfrv9rd55rd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS9OEwGWvSnFNuQUm_CnxpgFRwjDNpMVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "119794560669-jspiq81hv6i62ioca3n8dcfrv9rd55rd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

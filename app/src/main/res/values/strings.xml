@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Lab1</string>
+    <string name="text_welcome">Welcome,</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="name_text">Name</string>
+    <string name="phone">Phone</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_in_u"><u>Sign in</u></string>
+    <string name="sign_up_u"><u>Sign up</u></string>
+</resources>
