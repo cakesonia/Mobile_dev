@@ -2,11 +2,13 @@ package com.example.lab1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.regex.Pattern;
@@ -25,13 +28,17 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
     private static final Pattern PHONE_PATTERN = Pattern.compile("\\+380(\\d){9}");
+
     private FirebaseAuth mAuth;
+
     private EditText txtInputEmail;
     private EditText txtInputName;
     private EditText txtInputPhone;
     private EditText txtInputPassword;
 
     private Button btnSignUp;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +54,19 @@ public class SignUpActivity extends AppCompatActivity {
 
         btnSignUp = findViewById(R.id.btnSignUp);
 
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validateFields();
+                if (!validateEmailField() | !validateNameField() | !validatePhoneField() |
+                        !validatePasswordField()) {
+                    return;
+                }
+
+                signUp(txtInputEmail.getEditableText().toString().trim(),
+                        txtInputPassword.getEditableText().toString().trim());
             }
         });
     }
@@ -62,7 +78,8 @@ public class SignUpActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
-    public void signUp(String email, String password, String name) {
+    public void signUp(String email, String password) {
+        progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -70,31 +87,38 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success
                             Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser currentUser = mAuth.getCurrentUser();
+                            setUserName(txtInputName.getEditableText().toString().trim(), currentUser);
                         } else {
                             // If sign in fails, display a message to the user.
+                            progressBar.setVisibility(View.INVISIBLE);
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-        setUserName(name);
     }
 
-    public void setUserName(String name) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public void setUserName(String name, FirebaseUser user) {
         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name).build();
 
-        user.updateProfile(userProfileChangeRequest)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User profile updated.");
+        if (user != null) {
+            user.updateProfile(userProfileChangeRequest)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "User profile updated.");
+                                openWelcome();
+                            }
                         }
-                    }
-                });
+                    });
+        } else {
+            Toast.makeText(SignUpActivity.this, "User is null, name isn't added",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     public boolean validateEmailField() {
@@ -148,16 +172,6 @@ public class SignUpActivity extends AppCompatActivity {
             txtInputPassword.setError(null);
             return true;
         }
-    }
-
-    public void validateFields() {
-        if (!validateEmailField() | !validateNameField() | !validatePhoneField() |
-                !validatePasswordField()) {
-            return;
-        }
-        signUp(txtInputEmail.getText().toString(), txtInputPassword.getText().toString(),
-                txtInputName.getEditableText().toString().trim());
-        openWelcome();
     }
 
     public void openWelcome() {

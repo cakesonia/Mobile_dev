@@ -11,15 +11,21 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".SignInActivity">
+        <activity
+            android:name=".SignInActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".WelcomeActivity" />
+        <activity
+            android:name=".SignUpActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:noHistory="true" />
     </application>
 
 </manifest>

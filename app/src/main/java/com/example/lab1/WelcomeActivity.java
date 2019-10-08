@@ -1,6 +1,9 @@
 package com.example.lab1;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +18,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private FirebaseUser user;
 
     private TextView txtWelcome;
+    private Button btnSignOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,15 @@ public class WelcomeActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         txtWelcome = findViewById(R.id.txtWelcome);
+        btnSignOut = findViewById(R.id.btnSignOut);
+
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                openSignIn();
+            }
+        });
 
         displayUserName();
     }
@@ -35,8 +48,13 @@ public class WelcomeActivity extends AppCompatActivity {
             if (userName != null && !userName.isEmpty()) {
                 txtWelcome.append(" " + userName + "!");
             } else {
-                Toast.makeText(WelcomeActivity.this, "WTF?display", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WelcomeActivity.this, "No current user", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void openSignIn() {
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
     }
 }

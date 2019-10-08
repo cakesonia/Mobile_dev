@@ -9,4 +9,5 @@
     <string name="sign_in">Sign in</string>
     <string name="sign_in_u"><u>Sign in</u></string>
     <string name="sign_up_u"><u>Sign up</u></string>
+    <string name="sign_out">Sign out</string>
 </resources>

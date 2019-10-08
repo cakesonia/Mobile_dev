@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     tools:context=".SignInActivity">
 
     <LinearLayout
@@ -17,24 +17,26 @@
             android:id="@+id/txtInputEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorLightText"
             android:ems="10"
             android:hint="@string/email"
-            android:importantForAutofill="no"
+            android:importantForAutofill="yes"
             android:inputType="textEmailAddress"
-            android:textColor="@android:color/primary_text_light"
-            android:textColorHint="@android:color/secondary_text_dark" />
+            android:textColor="@color/colorLightText"
+            android:textColorHint="@color/colorDarkText" />
 
         <EditText
             android:id="@+id/txtInputPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:backgroundTint="@color/colorLightText"
             android:ems="10"
             android:hint="@string/password"
             android:importantForAutofill="no"
             android:inputType="textPassword"
-            android:textColor="@android:color/primary_text_light"
-            android:textColorHint="@android:color/secondary_text_dark" />
+            android:textColor="@color/colorLightText"
+            android:textColorHint="@color/colorDarkText" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -63,7 +65,19 @@
                 android:textSize="18sp" />
 
         </RelativeLayout>
-
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        android:max="100"
+        android:minWidth="260dp"
+        android:minHeight="80dp"
+        android:progress="1" />
 
 </RelativeLayout>
