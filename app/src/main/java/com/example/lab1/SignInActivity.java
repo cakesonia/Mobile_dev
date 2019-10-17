@@ -21,8 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private static final String TAG = "SignInActivity";
     private FirebaseAuth mAuth;
+
     private EditText txtInputEmail;
     private EditText txtInputPassword;
 
@@ -48,11 +48,7 @@ public class SignInActivity extends AppCompatActivity {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!validateEmailField() | !validatePasswordField()) {
-                    return;
-                }
-                signIn(txtInputEmail.getEditableText().toString().trim(), txtInputPassword.getEditableText().toString().trim());
-
+                validateAndSignIn();
             }
         });
     }
@@ -64,7 +60,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
-    public void signIn(String email, String password) {
+    private void signIn(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -72,26 +68,23 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success
-                            Log.d(TAG, "signInWithEmail:success");
                             openWelcome();
                         } else {
                             // If sign in fails, display a message to the user.
                             progressBar.setVisibility(View.INVISIBLE);
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
+                            Toast.makeText(SignInActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public boolean validateEmailField() {
-        String email = txtInputEmail.getEditableText().toString().trim();
+    private boolean validateEmailField(String email) {
         if (email.isEmpty()) {
-            txtInputEmail.setError("This field is required");
+            txtInputEmail.setError(getString(R.string.required_field));
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            txtInputEmail.setError("Invalid email");
+            txtInputEmail.setError(getString(R.string.invalid_email));
             return false;
         } else {
             txtInputEmail.setError(null);
@@ -99,10 +92,9 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
-    public boolean validatePasswordField() {
-        String password = txtInputPassword.getEditableText().toString().trim();
+    private boolean validatePasswordField(String password) {
         if (password.isEmpty()) {
-            txtInputPassword.setError("This field is required");
+            txtInputPassword.setError(getString(R.string.required_field));
             return false;
         } else {
             txtInputPassword.setError(null);
@@ -110,7 +102,16 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
-    public void openWelcome() {
+    private void validateAndSignIn() {
+        String strInputEmail = txtInputEmail.getEditableText().toString().trim();
+        String strInputPassword = txtInputPassword.getEditableText().toString().trim();
+        if (!validateEmailField(strInputEmail) | !validatePasswordField(strInputPassword)) {
+            return;
+        }
+        signIn(strInputEmail, strInputPassword);
+    }
+
+    private void openWelcome() {
         Intent intentWelcome = new Intent(this, WelcomeActivity.class);
         startActivity(intentWelcome);
     }

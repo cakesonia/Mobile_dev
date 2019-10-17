@@ -2,8 +2,6 @@ package com.example.lab1;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -19,14 +17,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private static final String TAG = "SignUpActivity";
     private static final Pattern PHONE_PATTERN = Pattern.compile("\\+380(\\d){9}");
 
     private FirebaseAuth mAuth;
@@ -60,13 +56,7 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!validateEmailField() | !validateNameField() | !validatePhoneField() |
-                        !validatePasswordField()) {
-                    return;
-                }
-
-                signUp(txtInputEmail.getEditableText().toString().trim(),
-                        txtInputPassword.getEditableText().toString().trim());
+                validateAndSignUp();
             }
         });
     }
@@ -78,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
-    public void signUp(String email, String password) {
+    private void signUp(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -86,48 +76,48 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success
-                            Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser currentUser = mAuth.getCurrentUser();
                             setUserName(txtInputName.getEditableText().toString().trim(), currentUser);
                         } else {
                             // If sign in fails, display a message to the user.
                             progressBar.setVisibility(View.INVISIBLE);
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                            Toast.makeText(SignUpActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public void setUserName(String name, FirebaseUser user) {
+    private void setUserName(String name, FirebaseUser user) {
         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name).build();
 
         if (user != null) {
-            user.updateProfile(userProfileChangeRequest)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "User profile updated.");
-                                openWelcome();
-                            }
-                        }
-                    });
+            updateUserProfile(user, userProfileChangeRequest);
         } else {
-            Toast.makeText(SignUpActivity.this, "User is null, name isn't added",
+            Toast.makeText(SignUpActivity.this, R.string.username_not_exist,
                     Toast.LENGTH_SHORT).show();
         }
     }
 
-    public boolean validateEmailField() {
-        String email = txtInputEmail.getEditableText().toString().trim();
+    private void updateUserProfile(FirebaseUser user, UserProfileChangeRequest userProfileChangeRequest) {
+        user.updateProfile(userProfileChangeRequest)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            openWelcome();
+                        }
+                    }
+                });
+    }
+
+    private boolean validateEmailField(String email) {
         if (email.isEmpty()) {
-            txtInputEmail.setError("This field is required");
+            txtInputEmail.setError(getString(R.string.required_field));
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            txtInputEmail.setError("Invalid email");
+            txtInputEmail.setError(getString(R.string.invalid_email));
             return false;
         } else {
             txtInputEmail.setError(null);
@@ -135,10 +125,9 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public boolean validateNameField() {
-        String name = txtInputName.getEditableText().toString().trim();
+    private boolean validateNameField(String name) {
         if (name.isEmpty()) {
-            txtInputName.setError("This field is required");
+            txtInputName.setError(getString(R.string.required_field));
             return false;
         } else {
             txtInputName.setError(null);
@@ -146,13 +135,12 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public boolean validatePhoneField() {
-        String phone = txtInputPhone.getEditableText().toString().trim();
+    private boolean validatePhoneField(String phone) {
         if (phone.isEmpty()) {
-            txtInputPhone.setError("This field is required");
+            txtInputPhone.setError(getString(R.string.required_field));
             return false;
         } else if (!PHONE_PATTERN.matcher(phone).matches()) {
-            txtInputPhone.setError("Invalid phone number");
+            txtInputPhone.setError(getString(R.string.invalid_phone_number));
             return false;
         } else {
             txtInputPhone.setError(null);
@@ -160,13 +148,12 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public boolean validatePasswordField() {
-        String password = txtInputPassword.getEditableText().toString().trim();
+    private boolean validatePasswordField(String password) {
         if (password.isEmpty()) {
-            txtInputPassword.setError("This field is required");
+            txtInputPassword.setError(getString(R.string.required_field));
             return false;
         } else if (password.length() < 8) {
-            txtInputPassword.setError("Password must contain at least 8 symbols");
+            txtInputPassword.setError(getString(R.string.password_symbols));
             return false;
         } else {
             txtInputPassword.setError(null);
@@ -174,7 +161,22 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public void openWelcome() {
+    private void validateAndSignUp() {
+        String strInputEmail = txtInputEmail.getEditableText().toString().trim();
+        String strInputName = txtInputName.getEditableText().toString().trim();
+        String strInputPhone = txtInputPhone.getEditableText().toString().trim();
+        String strInputPassword = txtInputPassword.getEditableText().toString().trim();
+
+        if (!validateEmailField(strInputEmail) | !validateNameField(strInputName) | !validatePhoneField(strInputPhone) |
+                !validatePasswordField(strInputPassword)) {
+            return;
+        }
+
+        signUp(txtInputEmail.getEditableText().toString().trim(),
+                txtInputPassword.getEditableText().toString().trim());
+    }
+
+    private void openWelcome() {
         Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);
     }

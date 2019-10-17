@@ -10,4 +10,11 @@
     <string name="sign_in_u"><u>Sign in</u></string>
     <string name="sign_up_u"><u>Sign up</u></string>
     <string name="sign_out">Sign out</string>
+    <string name="required_field">This field is required</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="auth_failed">Authentication failed.</string>
+    <string name="username_not_exist">User not exist</string>
+    <string name="invalid_phone_number">Invalid phone number</string>
+    <string name="password_symbols">Password must contain at least 8 symbols</string>
+    <string name="no_current_user">No current user</string>
 </resources>

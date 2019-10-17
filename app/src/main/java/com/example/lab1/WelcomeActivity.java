@@ -42,18 +42,18 @@ public class WelcomeActivity extends AppCompatActivity {
         displayUserName();
     }
 
-    public void displayUserName() {
+    private void displayUserName() {
         if (user != null) {
             String userName = user.getDisplayName();
             if (userName != null && !userName.isEmpty()) {
                 txtWelcome.append(" " + userName + "!");
             } else {
-                Toast.makeText(WelcomeActivity.this, "No current user", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WelcomeActivity.this, R.string.no_current_user, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public void openSignIn() {
+    private void openSignIn() {
         Intent intent = new Intent(this, SignInActivity.class);
         startActivity(intent);
     }
